@@ -3,6 +3,8 @@ import express from "express";
 const app = express();
 const port = 8000;
 
+app.use(express.json());
+
 const users = {
   usersList: [
     {
@@ -33,10 +35,21 @@ const users = {
   ]
 }
 
-app.use(express.json());
+const findUserByName = (name) => {
+  return users["usersList"].filter(
+    (user) => user["name"] === name
+  );
+};
 
 app.get("/users", (req, res) => {
-  res.send(users);
+  const name = req.query.name;
+  if (name != undefined) {
+    let result = findUserByName(name);
+    result = { usersList: result };
+    res.send(result);
+  } else {
+    res.send(users);
+  }
 });
 
 app.listen(port, () => {
